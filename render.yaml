@@ -1,0 +1,12 @@
+# نشر بنقرة واحدة على Render (Blueprint). نسخة واحدة فقط لأن الغرف محفوظة في ذاكرة الخادم.
+services:
+  - type: web
+    name: ekshef-khowik
+    runtime: node
+    plan: free
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    healthCheckPath: /healthz
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
