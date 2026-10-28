@@ -43,8 +43,10 @@ async function main() {
       res.end(JSON.stringify({ ok: true, rooms: manager.size }));
       return;
     }
-    // يجاوب فقط على المتصفح المفتوح على نفس الجهاز، فلا يكشف عناوين الشبكة للزوار
-    if (req.url === "/lan-info" && isLoopback(req.socket.remoteAddress)) {
+    // يجاوب فقط على المتصفح المفتوح على نفس الجهاز، فلا يكشف عناوين الشبكة للزوار.
+    // خلف وسيط (مثل Render) يصل كل طلب من عنوان محلي، فنرفض أي طلب مرّ عبر وسيط.
+    const proxied = !!(req.headers["x-forwarded-for"] || req.headers["forwarded"] || req.headers["x-real-ip"]);
+    if (req.url === "/lan-info" && isLoopback(req.socket.remoteAddress) && !proxied) {
       res.writeHead(200, { "content-type": "application/json", "cache-control": "no-store" });
       res.end(JSON.stringify({ addresses: lanAddresses(), port }));
       return;
